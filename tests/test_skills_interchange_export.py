@@ -20,6 +20,7 @@ INTERCHANGE_TOOLS = {
     "import_file",
     "import_fbx",
     "import_obj",
+    "import_usd",
     "export_gltf",
     "export_usd",
     "export_alembic",
@@ -143,6 +144,88 @@ def test_import_obj_reports_imported_objects_and_missing_file(tmp_path):
 
     missing = load_and_call("blender-interchange/scripts/import_file.py", bpy, path=str(tmp_path / "missing.fbx"))
     assert missing["success"] is False
+
+
+def test_import_usd_reports_imported_objects_and_elapsed_time(tmp_path):
+    """Smoke test: import_usd delegates to bpy.ops.wm.usd_import and returns typed output."""
+    source = tmp_path / "asset.usda"
+    source.write_text("#usda 1.0\n", encoding="utf-8")
+    cube = FakeObject("Cube")
+    bpy = _bpy_with_scene([cube])
+
+    def import_usd_op(filepath, **_kwargs):
+        assert filepath == str(source)
+        bpy.data.objects.append(FakeObject("ImportedUSD"))
+        return {"FINISHED"}
+
+    bpy.ops.wm.usd_import.side_effect = import_usd_op
+
+    result = load_and_call(
+        "blender-interchange/scripts/import_usd.py",
+        bpy,
+        path=str(source),
+        return_summary=True,
+        options={"scale": 0.01, "import_materials": True},
+    )
+
+    assert result["success"] is True
+    assert result["context"]["format"] == "usd"
+    assert "ImportedUSD" in result["context"]["imported_object_names"]
+    assert result["context"]["imported_count"] >= 1
+    assert "elapsed_ms" in result["context"]
+    assert result["context"]["elapsed_ms"] >= 0
+    assert "summary" in result["context"]
+    assert result["context"]["summary"]["object_count"] >= 1
+
+    # Missing file
+    missing = load_and_call(
+        "blender-interchange/scripts/import_usd.py",
+        bpy,
+        path=str(tmp_path / "nonexistent.usd"),
+    )
+    assert missing["success"] is False
+
+    # Without return_summary, summary should not be present
+    result_no_summary = load_and_call(
+        "blender-interchange/scripts/import_usd.py",
+        bpy,
+        path=str(source),
+    )
+    assert result_no_summary["success"] is True
+    assert "summary" not in result_no_summary.get("context", {})
+
+
+def test_import_usd_clear_scene_option(tmp_path):
+    """Clear scene option should call read_factory_settings before import."""
+    source = tmp_path / "asset.usdc"
+    source.write_text("", encoding="utf-8")
+    bpy = _bpy_with_scene([FakeObject("Existing")])
+
+    clear_calls = []
+    import_calls = []
+
+    def fake_clear(use_empty=False):
+        clear_calls.append(use_empty)
+        return {"FINISHED"}
+
+    def fake_import(filepath, **_kwargs):
+        import_calls.append(filepath)
+        return {"FINISHED"}
+
+    bpy.ops.wm.read_factory_settings.side_effect = fake_clear
+    bpy.ops.wm.usd_import.side_effect = fake_import
+
+    result = load_and_call(
+        "blender-interchange/scripts/import_usd.py",
+        bpy,
+        path=str(source),
+        clear_scene=True,
+    )
+
+    assert result["success"] is True
+    assert len(clear_calls) == 1
+    assert clear_calls[0] is True
+    assert len(import_calls) == 1
 
 
 def test_export_obj_fallback_and_gltf_batch_export(tmp_path):

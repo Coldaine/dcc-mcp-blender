@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import json
+import time
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from dcc_mcp_core.skill import skill_error, skill_exception, skill_success
 
 _PRESET_STORE_KEY = "dcc_mcp_export_presets"
-_IMPORT_FORMATS = {"fbx", "obj"}
+_IMPORT_FORMATS = {"fbx", "obj", "usd"}
 _EXPORT_FORMATS = {"fbx", "obj", "gltf", "usd", "alembic"}
 _FORMAT_EXTENSIONS = {
     ".fbx": "fbx",
@@ -174,6 +175,8 @@ def _import_by_format(
                     skill_error("OBJ import unavailable", "No Blender OBJ import operator is available."),
                 )
             _call_with_options(operator, {"filepath": str(target)}, options, warnings)
+        elif format == "usd":
+            _call_with_options(bpy.ops.wm.usd_import, {"filepath": str(target)}, options, warnings)
         else:
             return [], warnings, skill_error("Unsupported import format", f"Format '{format}' is not importable.")
     except Exception as exc:
@@ -317,6 +320,87 @@ def import_fbx(path: str, options: Mapping[str, Any] | None = None) -> dict:
 def import_obj(path: str, options: Mapping[str, Any] | None = None) -> dict:
     """Import an OBJ file."""
     return import_file(path=path, format="obj", options=options)
+
+
+def import_usd(
+    path: str,
+    options: Mapping[str, Any] | None = None,
+    clear_scene: bool = False,
+    target_collection: str | None = None,
+    return_summary: bool = False,
+) -> dict:
+    """Import a USD file with Blender's USD importer.
+
+    Provides a typed import path for USD/ USDA/USDC files so MCP clients
+    do not need to fall back to generic Python execution.
+
+    Args:
+        path: File path to the USD file.
+        options: Blender ``bpy.ops.wm.usd_import`` operator options (e.g.
+            ``import_materials``, ``import_animations``, ``scale``, etc.).
+        clear_scene: If True, clear the existing scene before import.
+        target_collection: Optional collection name for imported objects.
+        return_summary: If True, include object/material/mesh counts in
+            the result context.
+
+    Returns:
+        A result dict with ``success``, ``filepath``, ``format``,
+        ``imported_object_names``, ``imported_count``, ``elapsed_ms``,
+        ``warnings``, and optionally a ``summary`` with typed counts.
+    """
+    start = time.perf_counter()
+    try:
+        import bpy
+
+        if clear_scene:
+            try:
+                bpy.ops.wm.read_factory_settings(use_empty=True)
+            except Exception as exc:
+                return skill_exception(exc, message="Failed to clear scene before USD import")
+    except ImportError:
+        # Delegate to import_file which handles the bpy import check
+        pass
+
+    # Delegate shared import logic to import_file
+    result = import_file(
+        path=path,
+        format="usd",
+        collection_name=target_collection,
+        options=options,
+    )
+    elapsed = round((time.perf_counter() - start) * 1000)
+    result.setdefault("context", {})
+    result["context"]["elapsed_ms"] = elapsed
+
+    if not result.get("success"):
+        return result
+
+    # Attach typed summary counts
+    try:
+        import bpy
+
+        object_types: dict[str, int] = {}
+        mesh_count = 0
+        for obj in bpy.data.objects:
+            obj_type = getattr(obj, "type", "UNKNOWN")
+            object_types[obj_type] = object_types.get(obj_type, 0) + 1
+            if obj_type == "MESH" and getattr(obj, "data", None) is not None:
+                mesh_count += 1
+
+        summary = {
+            "object_count": len(bpy.data.objects),
+            "object_types": object_types,
+            "mesh_count": mesh_count,
+            "material_count": len(bpy.data.materials),
+            "collection_count": len(bpy.data.collections),
+        }
+        if return_summary:
+            result["context"]["summary"] = summary
+    except Exception:
+        if return_summary:
+            result["context"]["summary"] = None
+
+    return result
 
 
 def export_file(

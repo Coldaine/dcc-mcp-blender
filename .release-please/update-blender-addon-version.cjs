@@ -5,9 +5,10 @@ class BlenderAddonVersionUpdater {
       /(__addon_version__\s*=\s*")\d+\.\d+\.\d+(")/,
       `$1${version}$2`,
     );
+    // Use arrow function to avoid $1 + digit ambiguity ($10 vs $1+0)
     content = content.replace(
       /("version":\s*\()\d+,\s*\d+,\s*\d+(\))/,
-      `$1${major}, ${minor}, ${patch}$2`,
+      (_match, prefix, suffix) => `${prefix}${major}, ${minor}, ${patch}${suffix}`,
     );
     return content;
   }

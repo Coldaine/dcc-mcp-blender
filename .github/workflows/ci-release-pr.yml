@@ -86,7 +86,9 @@ jobs:
               'Cargo.toml',
               'Cargo.lock',
               'version.py',
+              '__version__.py',
               '__init__.py',
+              'blender_manifest.toml',
             ];
             const disallowed = names.filter(
               (name) => !releaseFiles.some((rf) => name.endsWith(rf) || name === rf)

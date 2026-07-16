@@ -25,30 +25,37 @@ and skills survive the cut.
   the six consolidated Broadside skills.
 - `docs/broadside/upstream-sources.md` — wiring doc: each upstream repo pinned
   with what's kept, what's rejected, and status.
-- `src/dcc_mcp_blender/skills/broadside-*` — the Broadside skill packages.
+- `src/dcc_mcp_blender/skills/broadside-spatial-truth` — the one functional
+  Broadside skill package (the others are documented targets, not yet built).
 
 ## Broadside skill packages — status
 
 | Skill | Status | Notes |
 |---|---|---|
 | `broadside-spatial-truth` | **functional** | 10 conformant tools, real bpy implementation, compiles. Patryk-derived measurement + assertion layer (the differentiated capability). |
-| `broadside-component-modeling` | scaffold | Consolidates Arjun hard-surface + vehicle-artist + prop-artist; composes bundled `blender-mesh`/`blender-mesh-ops`/`blender-geometry`/`blender-geometry-nodes`/`blender-scripting`. Author `tools.yaml` per `broadside-spatial-truth`. |
-| `broadside-ship-assembly` | scaffold | Consolidates Arjun scene-assembly + ProfRino blender-assembly; composes bundled `blender-scene-assembly`/`blender-collection`/`blender-objects` + Patryk relative-placement macros. |
-| `broadside-materials-and-texturing` | scaffold | Consolidates Arjun materials + texture-workflow; composes bundled `blender-materials`/`blender-shader-nodes`/`blender-material-library`/`blender-uv-ops`/`blender-texture-bake`. |
-| `broadside-articulation-and-rigging` | scaffold | Consolidates Arjun rigging + animation (rewritten off character assumptions); composes bundled `blender-rigging`/`blender-animation`/`blender-pose-library`. |
-| `broadside-visual-review` | scaffold | Consolidates Arjun lighting + camera-cinematography + rendering + lookdev; composes bundled `blender-lighting`/`blender-light-rig`/`blender-camera`/`blender-render`. |
-| `broadside-validation-and-publish` | scaffold | Consolidates Arjun qa-review + export-pipeline; composes bundled `blender-validation`/`blender-pipeline`/`blender-interchange` + `broadside-spatial-truth`. |
+
+`broadside-spatial-truth` is the only Broadside skill package in-tree. The six
+consolidated Broadside skills (component-modeling, ship-assembly,
+materials-and-texturing, articulation-and-rigging, visual-review,
+validation-and-publish) are a **design target only** — their donor→target
+mapping lives in `docs/broadside/skills.yaml` and `docs/broadside/SELECTION.md`.
+Empty placeholder directories for them were removed rather than left as dead
+`tools: []` skills; author each as a real package (per the pattern below) when
+it is actually built.
 
 The bundled upstream skills (e.g. `blender-scene`, `blender-objects`,
 `blender-mesh`, `blender-validation`, `blender-scene-assembly`, …) are already
 functional and map almost 1:1 onto the DCC selection in
-`docs/broadside/mcp-tools.yaml` — those are **kept as-is**. The Broadside
-scaffold skills compose them and add the Broadside-specific spatial-truth layer.
+`docs/broadside/mcp-tools.yaml` — those are **kept as-is**. Until the
+consolidated Broadside skills are built, compose those bundled skills directly
+and add the Broadside-specific spatial-truth layer.
 
 ## Conventions
 
 - New Broadside tools conform to the format proven in
   `broadside-spatial-truth`: `SKILL.md` (dcc-mcp frontmatter) + `tools.yaml`
   + `scripts/<tool>.py` using `from dcc_mcp_core.skill import run_main, skill_entry`.
-- Honest status labels in each `SKILL.md`: `scaffold` vs `functional`.
+- Do not commit empty placeholder skills (`tools: []`). A Broadside skill lands
+  only when it has a real `tools.yaml` and scripts; until then it stays a
+  documented target in `docs/broadside/`.
 - Do not silently delete or rewrite upstream bundled skills; compose them.

@@ -48,25 +48,25 @@ Full per-tool and per-skill detail: `SELECTION.md`, `mcp-tools.yaml`,
    conformant tools (5 measure + 5 assert), real `bpy`/`mathutils`
    implementation with no-bpy fallback, compiles clean. This is the
    Patryk-derived differentiated layer.
-3. Six scaffold Broadside skill packages (`broadside-component-modeling`,
+3. The six consolidated Broadside skills (`broadside-component-modeling`,
    `broadside-ship-assembly`, `broadside-materials-and-texturing`,
    `broadside-articulation-and-rigging`, `broadside-visual-review`,
-   `broadside-validation-and-publish`) — conformant `SKILL.md` frontmatter,
-   honest `scaffold` status, composition map to bundled skills, no `tools.yaml`
-   yet.
+   `broadside-validation-and-publish`) are a **documented design target**, not
+   in-tree code. Empty placeholder directories for them were removed rather than
+   left as dead `tools: []` skills; their donor→target mapping lives in
+   `skills.yaml` and `SELECTION.md`.
 4. `AGENTS.md` — adoption posture, skill status table, conventions.
 
-## Functional vs scaffold — honest
+## Functional vs planned — honest
 
 - **Functional today:** the forked server builds and runs (it is the upstream
   working MCP server); all bundled skills matching the DCC selection are
   present and working; `broadside-spatial-truth` is a complete, conformant,
   compiling skill package with real implementations.
-- **Scaffold (structure complete, tools not yet authored):** the six
-  consolidated Broadside skills. Each names the bundled skills it composes and
-  the donor skills it consolidates; authoring their `tools.yaml` (composing
-  bundled tools or thin `@skill_entry` wrappers) is the remaining work, bounded
-  by `SELECTION.md`.
+- **Planned (not built):** the six consolidated Broadside skills. Each is a
+  target in `skills.yaml`/`SELECTION.md` that names the bundled skills it will
+  compose and the donor skills it consolidates. It lands in-tree only when it
+  has a real `tools.yaml` + scripts — no empty placeholders.
 
 ## Next steps
 

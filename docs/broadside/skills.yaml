@@ -1,0 +1,201 @@
+# Project Broadside — selected skill inventory.
+# Source of truth for the skill selection: ../SELECTION.md
+# Donor wiring (repos, keep/reject): ../docs/upstream-sources.md
+# schema: tier 1/tier 2 donor skills (keep+rewrite) map to consolidated broadside skills.
+
+version: 1
+selection_date: 2026-07-16
+
+# ---------------------------------------------------------------------------
+# Donor skills: keep and rewrite
+# ---------------------------------------------------------------------------
+tier1_keep_and_rewrite:
+  - donor: hard-surface        # Arjun
+    keep:
+      - modifier sequencing
+      - non-destructive construction
+      - bevel and normal discipline
+      - panel and recess workflows
+      - topology review
+      - hard-surface validation
+    rewrite: rewrite MCP references to call selected DCC + Patryk tools
+    consolidates_into: broadside-component-modeling
+
+  - donor: vehicle-artist      # Arjun
+    keep:
+      - primary/secondary/tertiary form planning
+      - functional component hierarchy
+      - mechanical articulation
+      - repeated-detail discipline
+      - exterior material breakup
+    rewrite: remove assumptions specific to wheeled vehicles
+    consolidates_into: broadside-component-modeling
+
+  - donor: prop-artist         # Arjun
+    keep:
+      - component-level asset production (gun mounts, searchlights, rangefinders,
+        boats, cranes, AA mounts, radar assemblies, anchors, capstans)
+    rewrite: rewrite MCP references to selected tools
+    consolidates_into: broadside-component-modeling
+
+  - donor: scene-assembly      # Arjun
+    keep:
+      - reference/link/append strategy
+      - collection organization
+      - naming and ownership
+      - assembly validation
+      - avoiding monolithic files
+    rewrite: rewrite MCP references to selected tools
+    consolidates_into: broadside-ship-assembly
+
+  - donor: materials           # Arjun
+    keep: [disciplined PBR construction, texel consistency, material reuse, material verification]
+    rewrite: rewrite MCP references to selected tools
+    consolidates_into: broadside-materials-and-texturing
+
+  - donor: texture-workflow    # Arjun
+    keep: [PBR construction, texel consistency, texture verification]
+    rewrite: rewrite MCP references to selected tools
+    consolidates_into: broadside-materials-and-texturing
+
+  - donor: procedural-modeling # Arjun
+    keep: [repeated fittings, plating, railings, ladders, rivets, vents]
+    rewrite: rewrite around DCC geometry-nodes + execute_python
+    consolidates_into: broadside-component-modeling
+
+  - donor: rigging             # Arjun
+    keep: [movable turrets, guns, directors, cranes, radar assemblies]
+    rewrite: rewrite away from character-centric assumptions
+    consolidates_into: broadside-articulation-and-rigging
+
+  - donor: animation           # Arjun
+    keep: [mechanical articulation, turret traverse, barrel elevation, rotations]
+    rewrite: rewrite away from character-centric assumptions
+    consolidates_into: broadside-articulation-and-rigging
+
+  - donor: lighting            # Arjun
+    keep: [hero-image lighting workflow]
+    rewrite: consolidate into one review/render skill
+    consolidates_into: broadside-visual-review
+
+  - donor: camera-cinematography  # Arjun
+    keep: [hero-angle + ortho review cameras]
+    rewrite: consolidate into one review/render skill
+    consolidates_into: broadside-visual-review
+
+  - donor: rendering           # Arjun
+    keep: [technical + hero render output]
+    rewrite: consolidate into one review/render skill
+    consolidates_into: broadside-visual-review
+
+  - donor: lookdev             # Arjun
+    keep: [look-dev for hero images, not merely technical output]
+    rewrite: consolidate into one review/render skill
+    consolidates_into: broadside-visual-review
+
+  - donor: qa-review           # Arjun
+    keep:
+      - outer quality-review workflow calling Patryk spatial assertions,
+        DCC technical validators, and rendered visual checks
+    rewrite: rewrite to call selected Patryk + DCC tools
+    consolidates_into: broadside-validation-and-publish
+
+  - donor: export-pipeline     # Arjun
+    keep: [export deliverables]
+    rewrite: rewrite specifically around Broadside required deliverables
+    consolidates_into: broadside-validation-and-publish
+
+  - donor: blender-assembly    # ProfRino (https://github.com/ProfRino/Blender-MCP-Assemply-Skill)
+    keep:
+      - explicit connection map before geometry
+      - deliberate overlap/contact planning
+      - full-dimension vs half-extent awareness
+      - verification of visible gaps
+      - construction helpers for parts spanning two known points
+    reject:
+      - absolute rule that every directional cylinder must use bmesh
+      - absolute rule that every cube must use size=2
+    consolidates_into: broadside-ship-assembly
+
+# ---------------------------------------------------------------------------
+# Tier 2 — useful with rewriting (consolidate when relevant)
+# ---------------------------------------------------------------------------
+tier2_useful_with_rewrite:
+  - donor: environment-artist
+    scope: ocean, docks, shipyard, sky, haze, hero-scene context — not core ship geometry
+    consolidates_into: broadside-ship-assembly  # hero-scene context
+  - donor: asset-optimization
+    scope: later — viewport performance, render complexity, export optimization
+    consolidates_into: broadside-validation-and-publish
+  - donor: lod-pipeline
+    scope: when multiple ship representations or real-time deployment needed
+    consolidates_into: broadside-validation-and-publish
+  - donor: set-dressing
+    scope: crew-scale objects, deck equipment, ropes, crates, boats, aircraft, shipyard
+    consolidates_into: broadside-ship-assembly
+
+# ---------------------------------------------------------------------------
+# Discard / defer
+# ---------------------------------------------------------------------------
+discard_or_defer:
+  style_wrappers:
+    - horror variants
+    - anime
+    - chibi
+    - voxel
+    - pixel art
+    - manga
+    - cozy
+    - dreamcore
+    - mascot horror
+    - retro-console styles
+    - genre-game wrappers
+  deferred_categories:
+    - character-artist
+    - creature-artist
+    - hair-groom
+    - facial animation
+    - most gameplay-genre skills
+    - vr-specific skills
+    - unreal/unity/godot export skills  # unless those targets become real requirements
+  reason: do not contribute to realistic, production-grade historical warship construction.
+
+# ---------------------------------------------------------------------------
+# Final consolidated Broadside skills (~6)
+# ---------------------------------------------------------------------------
+consolidated_broadside_skills:
+  - name: broadside-component-modeling
+    donors: [hard-surface, vehicle-artist, prop-artist, procedural-modeling]
+    covers: turrets, armor, superstructures, guns, directors, vents, mechanical
+      assemblies, repeated fittings, plating, railings, ladders, rivets
+    tools: [dcc-mcp hardsurface_topology, dcc-mcp geometry_nodes, execute_python escape hatch]
+
+  - name: broadside-ship-assembly
+    donors: [scene-assembly, blender-assembly, environment-artist, set-dressing]
+    covers: modular ship construction, connection/contact planning, reference/link/append,
+      collection organization, naming, hero-scene context, deck dressing
+    tools: [dcc-mcp scene_assembly, patryk relative_placement, patryk spatial_truth]
+
+  - name: broadside-materials-and-texturing
+    donors: [materials, texture-workflow]
+    covers: reusable steel/painted steel/wood decking/glass/brass/canvas, weathering
+      masks, rust, soot, emissive nav lights; PBR + texel consistency + baking
+    tools: [dcc-mcp materials_shaders, dcc-mcp uv_baking]
+
+  - name: broadside-articulation-and-rigging
+    donors: [rigging, animation]
+    covers: turret traverse, barrel elevation, rangefinder/crane/radar rotation, gun
+      directors, folding wings, boat davits, doors/hatches
+    tools: [dcc-mcp rigging_constraints]
+
+  - name: broadside-visual-review
+    donors: [lighting, camera-cinematography, rendering, lookdev]
+    covers: ortho side/top/front reviews, hero-angle renders, silhouette checks,
+      material previews, lighting-neutral geometry inspection, close-up reviews
+    tools: [dcc-mcp cameras_lighting_render]
+
+  - name: broadside-validation-and-publish
+    donors: [qa-review, export-pipeline, asset-optimization, lod-pipeline]
+    covers: outer QA calling Patryk spatial assertions + DCC technical validators +
+      rendered visual checks; export deliverables; LOD/perf optimization
+    tools: [patryk spatial_truth, dcc-mcp validation_publishing, dcc-mcp import_export]

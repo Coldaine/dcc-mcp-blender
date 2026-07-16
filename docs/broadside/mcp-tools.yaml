@@ -1,0 +1,376 @@
+# Broadside Blender toolkit — MCP tool inventory
+# Source of truth: ../SELECTION.md. Keep in sync.
+# status: keep | reject | deferred | evaluate_on_demand | mechanism_only
+
+version: 1
+updated: 2026-07-16
+
+sources:
+  dcc_mcp:
+    repo: loonghao/dcc-mcp-blender
+    url: https://github.com/loonghao/dcc-mcp-blender
+    status: verified
+    role: primary authoring substrate
+    families:
+      scene_and_object_management:
+        status: keep
+        tools:
+          - new_scene
+          - open_scene
+          - save_scene
+          - get_scene_info
+          - get_session_info
+          - list_objects
+          - create_object
+          - delete_object
+          - duplicate_object
+          - rename_object
+          - parent_object
+          - group_objects
+          - set_visibility
+          - get_object_info
+          - get_bounding_box
+          - get_selection
+          - set_selection
+          - find_by_pattern
+          - create_collection
+          - link_to_collection
+          - list_collections
+        why: >
+          Coherent, typed object-management surface. Broadside models will have
+          hundreds/thousands of named components, assemblies, collections, weapon
+          systems, superstructure sections, and LOD variants — predictable hierarchy
+          operations, not raw bpy for routine scene management.
+      hard_surface_and_topology:
+        status: keep
+        tools:
+          - add_modifier
+          - apply_modifier
+          - list_modifiers
+          - get_mesh_info
+          - get_poly_count
+          - cleanup_mesh
+          - triangulate_mesh
+          - separate_mesh
+          - combine_meshes
+          - merge_vertices
+          - extract_faces
+          - mirror_mesh
+          - select_by_material
+        escape_hatch:
+          - execute_python
+          - execute_script_file
+        why: >
+          Best broad typed substrate for ordinary modifier/topology work.
+          execute_python handles operations too specialized for the typed surface.
+          Do not require every modeling operation to have its own MCP tool — complex
+          hull plating, deck sheer, turret housings, gun barrels, and procedural
+          detailing are reviewed Blender Python through the escape hatch.
+      materials_and_shader_graphs:
+        status: keep
+        tools:
+          - create_material
+          - assign_material
+          - set_material_color
+          - list_materials
+          - delete_material
+          - list_material_nodes
+          - set_principled_input
+          - list_node_trees
+          - list_nodes
+          - create_node
+          - delete_node
+          - list_node_sockets
+          - connect_nodes
+          - disconnect_nodes
+          - list_node_links
+          - set_node_input
+          - get_node_value
+          - create_material_with_nodes
+          - assign_texture_node
+          - set_principled_inputs
+          - get_shader_assignment
+          - get_material_connections
+          - assign_texture
+          - list_images
+          - reload_image
+          - set_color_management
+        why: >
+          More complete and consistently typed than alternatives. Broadside needs
+          reusable steel, painted steel, wood decking, glass, brass, canvas,
+          weathering masks, rust, soot, and emissive/navigation-light materials.
+      uvs_and_texture_baking:
+        status: keep
+        tools:
+          - list_uv_maps
+          - create_uv_map
+          - delete_uv_map
+          - copy_uv_map
+          - get_uv_info
+          - get_uv_islands
+          - project_uvs
+          - unwrap_uvs
+          - pack_uvs
+          - normalize_uvs
+          - list_bake_targets
+          - bake_textures
+          - bake_ambient_occlusion
+          - bake_lighting
+          - transfer_maps
+        why: Complete enough for actual asset preparation, not just procedural colors.
+      geometry_nodes:
+        status: keep
+        tools:
+          - add_geometry_nodes_modifier
+          - list_geometry_nodes_modifiers
+          - create_geometry_node_group
+          - assign_geometry_node_group
+          - set_geometry_node_modifier_input
+          - evaluate_geometry_nodes_info
+        why: >
+          Essential for repeated warship detail — portholes, rivets, railings,
+          ladders, deck fittings, vents, antenna arrays, repeated secondary armament,
+          procedural plating seams. Prefer procedural instancing over manually
+          creating thousands of repeated objects.
+      rigging_constraints_movable:
+        status: keep
+        tools:
+          - create_armature
+          - create_bone
+          - mirror_bones
+          - add_constraint
+          - set_constraint_properties
+          - bind_mesh_to_armature
+          - add_shape_key
+          - set_driver
+        mechanical_animation:
+          - set_keyframe
+          - set_frame_range
+          - get_frame_range
+          - set_current_frame
+          - get_keyframes
+          - delete_keyframes
+          - bake_animation
+        why: >
+          Broadside needs movable assemblies, not just static meshes — turret
+          traverse, barrel elevation, rangefinder rotation, crane movement, radar
+          rotation, directors, folding wings, boat davits, doors/hatches. Armatures
+          are not always ideal; parenting, constraints, drivers, and object animation
+          often fit better. These tools cover both.
+      cameras_lighting_rendering:
+        status: keep
+        tools:
+          - create_camera
+          - set_active_camera
+          - set_camera_properties
+          - list_cameras
+          - create_light
+          - set_light_properties
+          - list_lights
+          - set_world_background
+          - create_three_point_light_rig
+          - create_area_softbox
+          - create_hdri_world
+          - aim_light_at_object
+          - set_render_view_transform
+          - get_lighting_summary
+          - set_render_settings
+          - get_render_info
+          - capture_viewport
+          - render_scene
+        why: >
+          Strongest complete look-dev/render family. Visual review is part of
+          verification — ortho side/top/front reviews, hero-angle renders,
+          silhouette checks, material previews, lighting-neutral geometry
+          inspections, close-up turret/superstructure reviews.
+      validation_and_publishing:
+        status: keep
+        tools:
+          - run_scene_checks
+          - validate_mesh
+          - validate_materials
+          - validate_animation
+          - validate_export_readiness
+          - get_validation_report
+          - get_asset_metadata
+          - tag_asset_metadata
+          - clear_asset_metadata
+          - set_project_context
+          - create_publish_manifest
+          - prepare_publish_package
+        why: >
+          Patryk assertions and DCC production validation solve different problems.
+          Patryk: "Are these parts spatially correct?" DCC: "Is this asset
+          technically ready to export or publish?" We want both.
+      scene_assembly_external_refs:
+        status: keep
+        tools:
+          - merge_scene
+          - append_blend
+          - link_blend
+          - list_view_layers
+          - create_view_layer
+          - set_active_view_layer
+          - list_external_references
+        why: >
+          Final ships must not be one monolithic .blend built by one endless session.
+          Modular assemblies: hull, superstructure, turrets, boats, aircraft,
+          materials, hero-scene .blend files. These tools support that architecture.
+      import_export:
+        status: keep
+        tools:
+          - import_file
+          - import_fbx
+          - import_obj
+          - import_usd
+          - export_gltf
+          - export_usd
+          - export_alembic
+          - export_fbx
+          - export_obj
+          - batch_export
+          - import_to_scene
+        why: >
+          Broad format coverage and typed options — adequate for Blender-centered
+          production and downstream rigging/render workflows.
+    rejection: >
+      Do not blindly load all ~242 tools into agent context at once. Select coherent
+      families and progressively expose by workflow stage. Avoiding a context dump,
+      not composability architecture.
+
+  patryk:
+    repo: PatrykIti/blender-ai-mcp
+    url: https://github.com/PatrykIti/blender-ai-mcp
+    status: verified
+    role: geometric truth layer
+    families:
+      measurements:
+        status: keep
+        tools:
+          - scene_measure_distance
+          - scene_measure_dimensions
+          - scene_measure_gap
+          - scene_measure_alignment
+          - scene_measure_overlap
+      assertions:
+        status: keep
+        tools:
+          - scene_assert_contact
+          - scene_assert_dimensions
+          - scene_assert_containment
+          - scene_assert_symmetry
+          - scene_assert_proportion
+      inspection:
+        status: keep
+        tools:
+          - scene_get_bounding_box
+          - scene_get_origin_info
+          - scene_get_hierarchy
+          - scene_view_diagnostics
+          - scene_snapshot_state
+          - scene_compare_snapshot
+      relative_placement:
+        status: keep
+        tools:
+          - macro_relative_layout
+          - macro_place_supported_pair
+          - macro_align_part_with_contact
+        uses:
+          - seating turrets on barbettes
+          - aligning gun barrels with trunnions
+          - positioning rangefinders relative to bridges
+          - mounting boats on davits
+          - aligning directors, masts, radar arrays
+          - placing repeated secondary batteries
+    why: >
+      Strongest differentiated capability in the audit. Explicit geometric reasoning
+      for a warship: does the turret sit on the barbette? are both barrels the same
+      length? are barrels parallel? is the director centered? is the superstructure
+      within the deck footprint? do mirrored port/starboard assemblies match? is
+      there an unintended gap between armor sections? are components overlapping
+      rather than merely appearing adjacent? Not generic validation — explicit
+      geometric reasoning.
+    rejection: >
+      Do not select the entire ~185-tool legacy surface. Keep only spatial,
+      assertion, snapshot, and guided-repair tools — its differentiated strengths.
+
+  blender_lab_official:
+    repo: Blender Foundation / Blender Lab (official MCP server)
+    url: https://www.blender.org?p=96198
+    status: characterized
+    role: documentation search + .blend inspection
+    families:
+      docs_search:
+        status: keep
+        tools:
+          - search_api_docs
+          - get_python_api_docs
+          - search_manual_docs
+      blendfile_inspection:
+        status: evaluate_on_demand
+        tools:
+          - get_blendfile_summary_datablocks
+          - get_blendfile_summary_missing_files
+          - get_blendfile_summary_of_linked_libraries
+          - get_blendfile_summary_path_info
+    why: >
+      Official implementation's strongest unique value — bundles/searches Blender
+      documentation and provides file-level inspection. Reduces hallucinated bpy
+      APIs; valuable whenever we fall back to custom Python. Not the primary
+      authoring runtime.
+    todo: Confirm exact code distribution path/clone URL.
+
+  seehiong:
+    repo: seehiong/blender-mcp-n8n
+    url: https://github.com/seehiong/blender-mcp-n8n
+    status: verified
+    role: deterministic reproduction (record/replay only)
+    families:
+      record_replay:
+        status: mechanism_only
+        concepts:
+          - record commands
+          - save session
+          - reset scene
+          - replay commands
+          - edit/inspect the recorded sequence
+    why: Deterministic reproduction is extremely useful.
+    rejection: >
+      General tool wrappers are not authoritative due to the explicit None -> success
+      defect. Use its replay mechanism only after confirming replay detects command
+      failures.
+    todo: Gate adoption on confirming replay detects command failures.
+
+  ahujasid:
+    repo: ahujasid/blender-mcp
+    url: https://github.com/ahujasid/blender-mcp
+    status: verified
+    role: optional external asset providers
+    families:
+      asset_providers:
+        status: evaluate_on_demand
+        tools:
+          - poly_haven_search_download
+          - sketchfab_search_download
+          - hyper3d
+          - hunyuan3d
+    why: Evaluate as asset-source tools, not modeling tools.
+    rejection: Do not select its generic authoring layer as the foundation.
+
+  sandraschi:
+    repo: sandraschi/blender-mcp
+    url: https://github.com/sandraschi/blender-mcp
+    status: verified
+    role: deferred specialist features
+    families:
+      deferred:
+        status: deferred
+        concepts:
+          - VSE/video tooling
+          - VRM tooling
+          - Gaussian-splat tooling
+          - dashboard/monitoring ideas
+    rejection: >
+      Do not adopt the broad ~48-tool composite surface as the default — too many
+      operations packed into large composite tools, process architecture still
+      stabilizing. Mine specialist features only when they become relevant.

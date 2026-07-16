@@ -1,0 +1,302 @@
+tools:
+  - name: scene_measure_distance
+    description: "Measure world-space distance between two object origins."
+    source_file: scripts/scene_measure_distance.py
+    execution: sync
+    affinity: main
+    timeout_hint_secs: 0
+    input_schema:
+      type: object
+      additionalProperties: false
+      required: ['a', 'b']
+      properties:
+        a:
+          type: string
+        b:
+          type: string
+    output_schema:
+      type: object
+      additionalProperties: true
+      required: [success]
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations:
+      read_only_hint: true
+      destructive_hint: false
+      idempotent_hint: true
+      open_world_hint: false
+  - name: scene_measure_dimensions
+    description: "Measure world-space bounding-box dimensions of an object."
+    source_file: scripts/scene_measure_dimensions.py
+    execution: sync
+    affinity: main
+    timeout_hint_secs: 0
+    input_schema:
+      type: object
+      additionalProperties: false
+      required: ['object_name']
+      properties:
+        object_name:
+          type: string
+    output_schema:
+      type: object
+      additionalProperties: true
+      required: [success]
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations:
+      read_only_hint: true
+      destructive_hint: false
+      idempotent_hint: true
+      open_world_hint: false
+  - name: scene_measure_gap
+    description: "Measure the smallest axis-aligned gap between two object bounding boxes (0 if touching/overlapping)."
+    source_file: scripts/scene_measure_gap.py
+    execution: sync
+    affinity: main
+    timeout_hint_secs: 0
+    input_schema:
+      type: object
+      additionalProperties: false
+      required: ['a', 'b']
+      properties:
+        a:
+          type: string
+        b:
+          type: string
+    output_schema:
+      type: object
+      additionalProperties: true
+      required: [success]
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations:
+      read_only_hint: true
+      destructive_hint: false
+      idempotent_hint: true
+      open_world_hint: false
+  - name: scene_measure_alignment
+    description: "Measure the angle between two objects' local axes (barrel parallelism)."
+    source_file: scripts/scene_measure_alignment.py
+    execution: sync
+    affinity: main
+    timeout_hint_secs: 0
+    input_schema:
+      type: object
+      additionalProperties: false
+      required: ['a', 'b']
+      properties:
+        a:
+          type: string
+        b:
+          type: string
+        axis_a:
+          type: string
+          default: z
+        axis_b:
+          type: string
+          default: z
+    output_schema:
+      type: object
+      additionalProperties: true
+      required: [success]
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations:
+      read_only_hint: true
+      destructive_hint: false
+      idempotent_hint: true
+      open_world_hint: false
+  - name: scene_measure_overlap
+    description: "Measure the overlap region and volume between two object bounding boxes."
+    source_file: scripts/scene_measure_overlap.py
+    execution: sync
+    affinity: main
+    timeout_hint_secs: 0
+    input_schema:
+      type: object
+      additionalProperties: false
+      required: ['a', 'b']
+      properties:
+        a:
+          type: string
+        b:
+          type: string
+    output_schema:
+      type: object
+      additionalProperties: true
+      required: [success]
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations:
+      read_only_hint: true
+      destructive_hint: false
+      idempotent_hint: true
+      open_world_hint: false
+  - name: scene_assert_contact
+    description: "Assert two objects are touching or overlapping within a tolerance."
+    source_file: scripts/scene_assert_contact.py
+    execution: sync
+    affinity: main
+    timeout_hint_secs: 0
+    input_schema:
+      type: object
+      additionalProperties: false
+      required: ['a', 'b']
+      properties:
+        a:
+          type: string
+        b:
+          type: string
+        tolerance:
+          type: number
+          default: 0.0001
+    output_schema:
+      type: object
+      additionalProperties: true
+      required: [success]
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations:
+      read_only_hint: true
+      destructive_hint: false
+      idempotent_hint: true
+      open_world_hint: false
+  - name: scene_assert_dimensions
+    description: "Assert an object's dimensions match expected [x,y,z] within tolerance."
+    source_file: scripts/scene_assert_dimensions.py
+    execution: sync
+    affinity: main
+    timeout_hint_secs: 0
+    input_schema:
+      type: object
+      additionalProperties: false
+      required: ['object_name', 'expected']
+      properties:
+        object_name:
+          type: string
+        expected:
+          type: array
+          items:
+            type: number
+        tolerance:
+          type: number
+          default: 0.001
+    output_schema:
+      type: object
+      additionalProperties: true
+      required: [success]
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations:
+      read_only_hint: true
+      destructive_hint: false
+      idempotent_hint: true
+      open_world_hint: false
+  - name: scene_assert_containment
+    description: "Assert one object's bounding box is contained within another's."
+    source_file: scripts/scene_assert_containment.py
+    execution: sync
+    affinity: main
+    timeout_hint_secs: 0
+    input_schema:
+      type: object
+      additionalProperties: false
+      required: ['inner', 'outer']
+      properties:
+        inner:
+          type: string
+        outer:
+          type: string
+        tolerance:
+          type: number
+          default: 0.0
+    output_schema:
+      type: object
+      additionalProperties: true
+      required: [success]
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations:
+      read_only_hint: true
+      destructive_hint: false
+      idempotent_hint: true
+      open_world_hint: false
+  - name: scene_assert_symmetry
+    description: "Assert object b mirrors object a across an axis (port/starboard match)."
+    source_file: scripts/scene_assert_symmetry.py
+    execution: sync
+    affinity: main
+    timeout_hint_secs: 0
+    input_schema:
+      type: object
+      additionalProperties: false
+      required: ['a', 'b']
+      properties:
+        a:
+          type: string
+        b:
+          type: string
+        mirror_axis:
+          type: string
+          default: x
+        tolerance:
+          type: number
+          default: 0.001
+    output_schema:
+      type: object
+      additionalProperties: true
+      required: [success]
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations:
+      read_only_hint: true
+      destructive_hint: false
+      idempotent_hint: true
+      open_world_hint: false
+  - name: scene_assert_proportion
+    description: "Assert the ratio of two object dimensions matches an expected value."
+    source_file: scripts/scene_assert_proportion.py
+    execution: sync
+    affinity: main
+    timeout_hint_secs: 0
+    input_schema:
+      type: object
+      additionalProperties: false
+      required: ['object_name']
+      properties:
+        object_name:
+          type: string
+        dim_a:
+          type: string
+          default: x
+        dim_b:
+          type: string
+          default: z
+        expected_ratio:
+          type: number
+          default: 3.0
+        tolerance:
+          type: number
+          default: 0.05
+    output_schema:
+      type: object
+      additionalProperties: true
+      required: [success]
+    read_only: true
+    destructive: false
+    idempotent: true
+    annotations:
+      read_only_hint: true
+      destructive_hint: false
+      idempotent_hint: true
+      open_world_hint: false
